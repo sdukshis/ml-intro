@@ -1,31 +1,38 @@
-\documentclass[compress]{beamer}
+\documentclass{beamer}
 
+% \usetheme{Singapore}
+% \usetheme{Malmoe}
 \usetheme{Warsaw}
 
 \usepackage[utf8]{inputenc}
 \usepackage[russian]{babel}
 \usepackage{cmap}
+\usepackage{mathrsfs}
 
+% \useoutertheme{split}
+\useoutertheme{shadow}
 \usefonttheme{professionalfonts}
 \usepackage{graphicx}
 \usepackage{psfrag}
 \beamertemplatenavigationsymbolsempty 
 \DeclareMathOperator{\sign}{sign}
 
+\setbeamertemplate{footline}[frame number]
+
 \author{Павел Филонов \\ \href{mailto:filonovpv@gmail.com}{filonovpv@gmail.com}}
 \title{Введение в машинное обучение}
-\subtitle{Задачи классификации и регрессии}
+\subtitle{Основные понятия и определения}
 
 \begin{document}
-\begin{frame}
+\begin{frame}[plain]
     \titlepage
 \end{frame}
-\begin{frame}{Содержание}
+\begin{frame}[plain]{Содержание}
   \tableofcontents
 \end{frame}
 \section{Основные понятия и обозначения}
 \subsection{Постановка задачи машинного обучения}
-\begin{frame}
+\begin{frame}{Постановка задачи машинного обучения}
 Пусть
     \begin{itemize}
         \item $X$ --- множество объектов (objects);
@@ -35,7 +42,7 @@
     {\bf Дано:}
     \begin{itemize}
         \item $\{x_1, \dots, x_l\} \subset X$ --- обучающая выборка (training sample);
-        \item $y_i = y(x_i),~ i=1,\dots, l$ --- известные ответы (known targets).
+        \item $y_i = y(x_i),~ i=1,\dots, \ell$ --- известные ответы (known targets).
     \end{itemize}
     {\bf Найти:}
     $a: X \rightarrow Y$ --- алгоритм, решающую функцию (decision function), приближающую $y$ на всём множестве $X$.
@@ -51,7 +58,7 @@
 % Приведенная задача --- представляет собой центральную проблему, которая красной нитью проходит через весь курс.
 \end{frame}
 
-\subsection{Представление объектов. Признаковое описание}
+\subsection{Представление объектов и ответов.}
 \begin{frame}
 $f_j: X \rightarrow D_j, j=1,\dots,n$ --- принаки объектов (features).
 
@@ -67,15 +74,14 @@ $f_j: X \rightarrow D_j, j=1,\dots,n$ --- принаки объектов (featu
 
 Матрица <<объекты-признаки>> (feature matrix)
 $$
-F = ||f_j(x_i)||_{l \times n} = \begin{pmatrix}
+F = ||f_j(x_i)||_{\ell \times n} = \begin{pmatrix}
     f_1(x_1) & \cdots & f_n(x_1) \\
     \vdots   & \ddots &   \vdots \\
-    f_1(x_l) & \cdots & f_n(x_l) \\
+    f_1(x_\ell) & \cdots & f_n(x_\ell) \\
     \end{pmatrix}
 $$
 \end{frame}
 
-\subsection{Представление ответов. Типы задач}
 \begin{frame}{Представление ответов. Типы задач}
     
     {\bf Задача классификации} (classification):
@@ -99,7 +105,7 @@ $$
     \end{itemize}
 \end{frame}
 \begin{frame}{Задача классификации цветков ириса [Фишер, 1936]}
-    \footnotesize $n = 4$ количественный признака, $|Y| = 3$ класса, объем выборки $l = 150$.
+    \footnotesize $n = 4$ количественный признака, $|Y| = 3$ класса, объем выборки $\ell = 150$.
     \includegraphics[width=\linewidth]{fig/iris.png}
 \end{frame}
 \begin{frame}{Задача оценки стоимости жилья в Бостоне}
@@ -130,14 +136,74 @@ $$
 $$
 \end{frame}
 
+\begin{frame}{Метод обучения}
+Метод обучения (learning algorithm) --- это отображение вида
+$$
+\mu: (X \times Y)^l \rightarrow A,
+$$
+которое произвольной выборке $S = (x_i, y_i)_{i=1}^{\ell} \subset (X \times Y)^\ell$ ставит в соответсвие некоторый алгоритм $a \in A$.
+
+В задачах обучения по прецедентам всегда есть два этапа:
+\begin{itemize}
+    \item Этап обучения (training): \\
+    метод $\mu$ по выборке $S$ строит алгоритм $a = \mu(S)$.
+    \item Этап применеия (testing): \\
+    алгоритм $a$ для новых объектов $x \in X$ выбаёт ответы $a(x) \in Y$.
+
+\end{itemize}
+\end{frame}
+
+\subsection{Обучение и переобучение}
+\begin{frame}{Функционалы качества}
+$\mathscr{L}(a, x, y)$ --- функция потерь (loss function) --- величина ошибки алгоритма $a \in A$ на объекте $x \in X$.
+
+{\bf Функции потерь для задач классификации:}
+\begin{itemize}
+    \item $\mathscr{L}(a, x, y) = [a(x) \ne y(x)]$ --- индикатор ошибки.
+\end{itemize}
+
+{\bf Функции потерь для задач регрессии:}
+\begin{itemize}
+    \item $\mathscr{L}(a, x, y) = |a(x) - y(x)|$ --- абсолютное значение ошибки;
+    \item $\mathscr{L}(a, x, y) = \left(a(x) - y(x)\right)^2$ --- квадратичная ошибка.
+\end{itemize}
+
+{\it Эмпирический риск} --- функционал качества алгоритма $а$ на $S = \{(x_i, y_i)\}_{i=1}^{\ell}$:
+$$
+Q(a, S) = \frac{1}{\ell}\sum\limits_{i = 1}^{\ell}\mathscr{L}(a, x_i, y_i).
+$$
+\end{frame}
+
+\begin{frame}{Сведение задачи обучения к задача оптимизации}
+Метод минимизации эмпирического риска:
+$$
+\mu(S) = \arg\min_{a \in A} Q(a, S)
+$$
+
+{\bf Пример:} метод наименьших квадратов ($Y = \mathbb{R}, \mathscr{L}$ квадратична):
+$$
+\mu(S) = \arg\min_{theta}\sum\limits_{i=1}{\ell}\left(g(x_i, \theta) - y_i\right)^2.
+$$
+
+{\bf Проблемы обобщающей способности:}
+\begin{itemize}
+    \item найдём ли мы <<закон природы>> или переобучимся, т.е. подгоним функцию $g(x_i,\theta)$ под заданные точки?
+    \item будет ли $a = \mu(S)$ приближать функцию $y$ на всём $X$?
+    \item будет ли $Q(a, S)$ мало на новых данных --- контрольной выборке (validation set) $S' = \{(x_i', y_i')\}_{i=1}^{k}$?
+\end{itemize}
+\end{frame}
 % \begin{frame}{Машинное обучение ранжированию <<Интернет-математика 2009>>}
 
 % \end{frame}
-\section{Функция потерь}
+\section{Примеры прикладных задач}
 \subsection{Пример 1}
 \begin{frame}
 \end{frame}
 \subsection{Пример 2}
+\begin{frame}
+\end{frame}
+\section{Методология машинного обучения}
+\subsection{Межотраслевой стандарт CRISP-DM}
 \begin{frame}
 \end{frame}
 \end{document}
