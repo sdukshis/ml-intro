@@ -1,0 +1,11 @@
+*.aux
+*.out
+*.log
+*.pdf
+*.toc
+*.ipynb_checkpoints
+*.sublime-project
+*.sublime-workspace
+*.nav
+*.snm
+*.html

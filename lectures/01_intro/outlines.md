@@ -9,7 +9,18 @@
 == Примеры задач
 
 === Распознование объектов на фотографии
- Пример
+  * CIFAR
+  * MNIST
+  * Avito cars
+
+=== Задачи классификации
+ * Titanic
+ * San Francisco Crime Classification
+ * Forecasting the 2016 NCAA Basketball Tournament
+
+=== Рекомендательные системы
+ * Expedia Hotel Recommendations
+
 
 == Программа курса
 
