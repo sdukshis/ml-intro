@@ -63,9 +63,74 @@ $$
 
 \begin{frame}{Пример: рост и вес в зависимости от пола}
 $N = 200$
-\includegraphics[width=\linewidth]{../fig/height_n_weight.png}
+\includegraphics[width=\linewidth]{../fig/height_n_weight.pdf}
 
 \footnotesize
 Dataset from \url{https://vincentarelbundock.github.io/Rdatasets/datasets.html}
+\end{frame}
+
+%TODO: добавить пример для задачи регрессии
+
+\section{Метрические методы классификации}
+\subsection{Обобщённый метрический классификатор}
+\begin{frame}{Обобщённый метрический классификатор}
+Для произвольного $x \in X$ отранжируем объекты $x_1,\dots,x_\ell$:
+$$
+    \rho(x, x^{(1)}) \le \rho(x, x^{(2)}) \le \dots \le \rho(x, x^{(\ell)}),
+$$
+$x^{(i)}$ --- $i$-й сосед объекта $x$ среди $x_1,\dots,x_\ell$;\\
+$y^{(i)}$ --- ответ на $i$-м соседе объекта $x$.
+
+{\bf Метричский алгоритм классификации:}
+$$
+    a(x; S) = \arg\max_{y \in Y}\underbrace{\sum\limits_{i=1}^{\ell}\left[y^{(i)} = y\right]w(i, x)}_{\Gamma_y(x)},
+$$
+$w(i,x)$ --- вес (степень важности) $i$-го соседа объекта $x$, неотрицателен, не возрастает по $i$.\\
+$\Gamma_y(x)$ --- оценка близости объекта $x$ к классу $y$.
+\end{frame}
+
+\subsection{Метод ближайших соседей}
+\begin{frame}{Метод ближайшего соседа}
+$w(i, x) = [i = 1]$.
+\vfill
+{\bf Преимущества:}
+\begin{itemize}
+    \item простота реализации;
+    \item интерпретируемость решений, вывод на основе прецедентов (case-based reasoning, CBR).
+\end{itemize}
+{\bf Недостатки:}
+\begin{itemize}
+    \item неустойчивость к погрешностям (шуму, выбросам);
+    \item отсутсвие настраиваемых параметров;
+    \item низкое качество классификации;
+    \item приходится хранить всю выборку целиком.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Метод $k$ ближайших соседей}
+$w(i, x) = [i \le k]$.
+\vfill
+{\bf Преимущества:}
+\begin{itemize}
+    \item менее чувствителен к шуму;
+    \item появился параметр $k$.
+\end{itemize}
+{\bf Оптимизация числа соседей} $k$:
+функционал скользящего контроля leave-one-out
+$$
+LOO(k, S) = \sum\limits_{i=1}^{\ell}\left[a(x_i; S\setminus\{x_i\}; k) \ne y_i\right] \rightarrow \min_k.
+$$
+{\bf Проблема:}
+\begin{itemize}
+    \item неоднозначность классификации при $\Gamma_y(x) = \Gamma_s(x),\; y \ne s$.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Пример. Зависимость LOO от числа соседей}
+\includegraphics[width=\linewidth]{../fig/iris_knn_loo.pdf}
+\begin{itemize}
+    \item \textcolor{red}{несмещенная доля ошибок LOO}
+    \item \textcolor{blue}{смещенная доля ошибок, когда объект учитывается как сосед самого себя}
+\end{itemize}
 \end{frame}
 \end{document}
